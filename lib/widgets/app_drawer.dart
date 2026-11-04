@@ -222,6 +222,17 @@ class AppDrawer extends StatelessWidget {
                     );
                   },
                 ),
+                const Divider(height: 16),
+                _buildMenuItem(
+                  context,
+                  icon: Icons.logout_rounded,
+                  iconColor: const Color(0xFFE11D48),
+                  title: settings.tr('logout_btn'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _confirmLogout(context, user, settings);
+                  },
+                ),
               ],
             ),
           ),
@@ -290,6 +301,33 @@ class AppDrawer extends StatelessWidget {
             )
           : const Icon(Icons.arrow_forward_ios_rounded, size: 14),
       onTap: onTap,
+    );
+  }
+
+  void _confirmLogout(BuildContext context, UserProvider user, SettingsProvider settings) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(settings.tr('logout_btn')),
+        content: Text(settings.tr('logout_confirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(settings.tr('cancel')),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE11D48),
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              user.logout();
+            },
+            child: Text(settings.tr('logout_btn')),
+          ),
+        ],
+      ),
     );
   }
 }

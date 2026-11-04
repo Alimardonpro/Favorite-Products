@@ -29,7 +29,7 @@ void main() {
     await tester.pumpWidget(const MyApp());
     await tester.pumpAndSettle();
 
-    // Sarlavha mavjudligini tekshirish
-    expect(find.text('Sevimli mahsulotlar'), findsOneWidget);
+    // Kirish ekrani sarlavhasi mavjudligini tekshirish
+    expect(find.text('Xush kelibsiz!'), findsOneWidget);
   });
 }

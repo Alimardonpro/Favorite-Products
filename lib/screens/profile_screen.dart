@@ -157,6 +157,77 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
+            // Manzil bo'sh bo'lganda ogohlantiruvchi qulay banner
+            if (user.address.trim().isEmpty)
+              Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF422006) : const Color(0xFFFEF3C7),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF78350F) : const Color(0xFFFDE68A),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD97706),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.add_location_alt_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            settings.tr('address_empty_title'),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: isDark ? Colors.white : const Color(0xFF92400E),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            settings.tr('address_empty_desc'),
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: isDark
+                                  ? const Color(0xFFFDE68A)
+                                  : const Color(0xFFB45309),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _showEditProfileSheet(context, user, settings),
+                      style: TextButton.styleFrom(
+                        backgroundColor: const Color(0xFFD97706),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        settings.tr('add_address_btn'),
+                        style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             // Ma'lumotlar bloki
             Align(
               alignment: Alignment.centerLeft,
@@ -206,6 +277,8 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.phone_outlined,
                     label: settings.tr('phone'),
                     value: user.phone,
+                    placeholder: settings.tr('no_phone'),
+                    onTap: () => _showEditProfileSheet(context, user, settings),
                   ),
                   const Divider(height: 1, indent: 56),
                   _buildInfoTile(
@@ -213,6 +286,8 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.location_on_outlined,
                     label: settings.tr('address'),
                     value: user.address,
+                    placeholder: settings.tr('no_address'),
+                    onTap: () => _showEditProfileSheet(context, user, settings),
                   ),
                 ],
               ),
@@ -236,6 +311,28 @@ class ProfileScreen extends StatelessWidget {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 2,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Chiqish tugmasi
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: OutlinedButton.icon(
+                onPressed: () => _confirmLogout(context, user, settings),
+                icon: const Icon(Icons.logout_rounded, size: 18, color: Color(0xFFE11D48)),
+                label: Text(
+                  settings.tr('logout_btn'),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.5,
+                    color: Color(0xFFE11D48),
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFFFDA4AF)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               ),
             ),
@@ -303,27 +400,55 @@ class ProfileScreen extends StatelessWidget {
     required IconData icon,
     required String label,
     required String value,
+    String? placeholder,
+    VoidCallback? onTap,
   }) {
+    final isValueEmpty = value.trim().isEmpty;
     return ListTile(
+      onTap: onTap,
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFF4F46E5).withValues(alpha: 0.1),
+          color: (isValueEmpty ? const Color(0xFFF59E0B) : const Color(0xFF4F46E5))
+              .withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: const Color(0xFF4F46E5), size: 20),
+        child: Icon(
+          icon,
+          color: isValueEmpty ? const Color(0xFFF59E0B) : const Color(0xFF4F46E5),
+          size: 20,
+        ),
       ),
       title: Text(
         label,
         style: const TextStyle(fontSize: 11.5, color: Color(0xFF64748B)),
       ),
       subtitle: Text(
-        value,
-        style: const TextStyle(
+        isValueEmpty ? (placeholder ?? 'Kiritilmagan') : value,
+        style: TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: isValueEmpty ? FontWeight.w500 : FontWeight.w600,
+          fontStyle: isValueEmpty ? FontStyle.italic : FontStyle.normal,
+          color: isValueEmpty ? const Color(0xFFD97706) : null,
         ),
       ),
+      trailing: isValueEmpty && onTap != null
+          ? Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4F46E5).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'Kiritish',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4F46E5),
+                ),
+              ),
+            )
+          : null,
     );
   }
 
@@ -423,6 +548,34 @@ class ProfileScreen extends StatelessWidget {
         prefixIcon: Icon(icon, size: 20),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+    );
+  }
+
+  void _confirmLogout(BuildContext context, UserProvider user, SettingsProvider settings) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(settings.tr('logout_btn')),
+        content: Text(settings.tr('logout_confirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(settings.tr('cancel')),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE11D48),
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(ctx); // Close dialog
+              Navigator.pop(context); // Close ProfileScreen
+              user.logout();
+            },
+            child: Text(settings.tr('logout_btn')),
+          ),
+        ],
       ),
     );
   }

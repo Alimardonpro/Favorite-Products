@@ -6,6 +6,7 @@ import 'providers/products_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/user_provider.dart';
 import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
-      child: Consumer<SettingsProvider>(
-        builder: (context, settings, child) {
+      child: Consumer2<SettingsProvider, UserProvider>(
+        builder: (context, settings, user, child) {
           return MaterialApp(
             title: settings.tr('app_title'),
             debugShowCheckedModeBanner: false,
@@ -122,7 +123,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: const HomeScreen(),
+            home: user.isLoggedIn ? const HomeScreen() : const LoginScreen(),
           );
         },
       ),
